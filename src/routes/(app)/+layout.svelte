@@ -192,26 +192,52 @@
 	};
 
 	onMount(async () => {
-		if ($user === undefined || $user === null) {
+		// 🦞 先搜 AI 修改：允许匿名访问，不强制重定向到认证页面
+		// if ($user === undefined || $user === null) {
+		// 	await goto('/auth');
+		// 	return;
+		// }
+		
+		// 检查是否是匿名访问模式
+		const enableAnonymousAccess = $config?.features?.enable_anonymous_access ?? false;
+		const isAnonymous = $user === undefined || $user === null || !$user;
+		
+		if (!enableAnonymousAccess && isAnonymous) {
+			// 旧行为：强制认证
 			await goto('/auth');
 			return;
 		}
-		if (!['user', 'admin'].includes($user?.role)) {
+		
+		if ($user && !['user', 'admin'].includes($user?.role)) {
 			return;
 		}
 
 		clearChatInputStorage();
-		await Promise.all([
-			checkLocalDBChats(),
-			setBanners().catch((e) => console.error('Failed to load banners:', e)),
-			setTools().catch((e) => console.error('Failed to load tools:', e)),
-			setUserSettings(async () => {
-				await Promise.all([
-					setModels().catch((e) => console.error('Failed to load models:', e)),
-					setToolServers().catch((e) => console.error('Failed to load tool servers:', e))
-				]);
-			}).catch((e) => console.error('Failed to load user settings:', e))
-		]);
+		
+		// 🦞 优化 1：匿名访问可以加载模型列表
+		// 问题：匿名访问时没有 token，但模型列表 API 支持匿名访问
+		// 解决：分离需要认证和不需要认证的 API
+		if (!isAnonymous) {
+			// 已登录用户：正常加载所有资源
+			await Promise.all([
+				checkLocalDBChats(),
+				setBanners().catch((e) => console.error('Failed to load banners:', e)),
+				setTools().catch((e) => console.error('Failed to load tools:', e)),
+				setUserSettings(async () => {
+					await Promise.all([
+						setModels().catch((e) => console.error('Failed to load models:', e)),
+						setToolServers().catch((e) => console.error('Failed to load tool servers:', e))
+					]);
+				}).catch((e) => console.error('Failed to load user settings:', e))
+			]);
+		} else {
+			// 匿名访问：加载不需要认证的 API（模型列表）
+			console.log('[匿名访问] 加载模型列表');
+			await Promise.all([
+				checkLocalDBChats(),
+				setModels().catch((e) => console.error('Failed to load models:', e))
+			]);
+		}
 
 		// Helper function to check if the pressed keys match the shortcut definition
 		const isShortcutMatch = (event: KeyboardEvent, shortcut): boolean => {
@@ -459,6 +485,28 @@
 			{/if}
 		</div>
 	</div>
+{:else}
+	{#if $config?.features?.enable_anonymous_access}
+		<!-- 🦞 匿名访问布局：显示侧边栏和聊天界面 -->
+		<div class="app relative">
+			<div
+				class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row justify-end"
+			>
+				<Sidebar />
+				{#if loaded}
+					<slot />
+				{:else}
+					<div
+						class="w-full flex-1 h-full flex items-center justify-center {$showSidebar
+							? '  md:max-w-[calc(100%-var(--sidebar-width))]'
+							: ' '}"
+					>
+						<Spinner className="size-5" />
+					</div>
+				{/if}
+			</div>
+		</div>
+	{/if}
 {/if}
 
 <style>

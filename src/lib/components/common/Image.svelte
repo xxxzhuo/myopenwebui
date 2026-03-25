@@ -20,6 +20,14 @@
 
 	let _src = '';
 	$: _src = src.startsWith('/') ? `${WEBUI_BASE_URL}${src}` : src;
+	const fallbackSrc = `${WEBUI_BASE_URL}/static/favicon.png`;
+
+	const handleImageError = (e: Event) => {
+		const target = e.currentTarget as HTMLImageElement;
+		if (target.src !== fallbackSrc) {
+			target.src = fallbackSrc;
+		}
+	};
 
 	let showImagePreview = false;
 </script>
@@ -35,7 +43,14 @@
 		aria-label={$i18n.t('Show image preview')}
 		type="button"
 	>
-		<img src={_src} {alt} class={imageClassName} draggable="false" data-cy="image" />
+		<img
+			src={_src}
+			{alt}
+			class={imageClassName}
+			draggable="false"
+			data-cy="image"
+			on:error={handleImageError}
+		/>
 	</button>
 
 	{#if dismissible}

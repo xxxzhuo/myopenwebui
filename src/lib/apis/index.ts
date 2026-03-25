@@ -152,6 +152,17 @@ export const getModels = async (
 		models = Object.values(modelsMap);
 	}
 
+	// 🦞 先搜 AI：模型名称映射（后端 API 响应映射）
+	// 将模型 ID 映射为用户友好的显示名称
+	const MODEL_NAME_MAP: Record<string, string> = {
+		'xiansou-ai': '先搜 AI'
+	};
+
+	models = models.map((model) => ({
+		...model,
+		name: MODEL_NAME_MAP[model.id] ?? model?.name ?? model?.id
+	}));
+
 	return models;
 };
 

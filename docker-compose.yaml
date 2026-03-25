@@ -1,21 +1,28 @@
+version: '3.8'
+
 services:
   ollama:
     volumes:
       - ollama:/root/.ollama
     container_name: ollama
-    pull_policy: always
+    pull_policy: if_not_present
     tty: true
     restart: unless-stopped
-    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    image: ollama/ollama:latest
+    networks:
+      - open-webui-network
 
   open-webui:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+    # 使用官方镜像
+    image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
+      # 挂载前端构建产物
+      - ./build:/app/build:ro
+      # ⭐ 挂载修改后的后端配置
+      - ./backend/open_webui/env.py:/app/backend/open_webui/env.py:ro
+      - ./backend/open_webui/main.py:/app/backend/open_webui/main.py:ro
     depends_on:
       - ollama
     ports:
@@ -23,10 +30,23 @@ services:
     environment:
       - 'OLLAMA_BASE_URL=http://ollama:11434'
       - 'WEBUI_SECRET_KEY='
+      - 'WEBUI_NAME=先搜 AI'
+      # 🦞 允许匿名访问（用户可以直接看到页面，点击操作时再认证）
+      - 'ENABLE_ANONYMOUS_ACCESS=True'
+      - 'ENABLE_INITIAL_ADMIN_SIGNUP=True'
+      # 🦞 显示登录/注册表单（用户可自由选择登录或注册）
+      - 'ENABLE_LOGIN_FORM=True'
+      - 'ENABLE_SIGNUP=True'
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
+    networks:
+      - open-webui-network
 
 volumes:
   ollama: {}
   open-webui: {}
+
+networks:
+  open-webui-network:
+    driver: bridge

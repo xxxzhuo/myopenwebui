@@ -448,7 +448,7 @@
 
 					if ($isLastActiveTab) {
 						if ($settings?.notificationEnabled ?? false) {
-							new Notification(`${displayTitle} • Open WebUI`, {
+							new Notification(`${displayTitle} • 先搜AI`, {
 								body: content,
 								icon: `${WEBUI_BASE_URL}/static/favicon.png`
 							});
@@ -651,7 +651,7 @@
 
 				if ($isLastActiveTab) {
 					if ($settings?.notificationEnabled ?? false) {
-						new Notification(`${title} • Open WebUI`, {
+						new Notification(`${title} • 先搜AI`, {
 							body: data?.content,
 							icon: `${WEBUI_API_BASE_URL}/users/${data?.user?.id}/profile/image`
 						});
@@ -887,10 +887,40 @@
 						await goto(`/auth?redirect=${encodedUrl}`);
 					}
 				} else {
-					// Don't redirect if we're already on the auth page
+					// 🦞 先搜 AI 修改：不再强制重定向到认证页面
+					// 允许未登录用户访问首页，在需要操作时再触发认证
 					// Needed because we pass in tokens from OAuth logins via URL fragments
-					if ($page.url.pathname !== '/auth') {
-						await goto(`/auth?redirect=${encodedUrl}`);
+					
+					// 方案 A 修复：等待 $config 完全加载后再检查匿名访问配置
+					// 问题：$config 是异步加载的，如果在 config.set() 完成前检查会得到 undefined
+					// 解决：等待 tick() 确保 Svelte 的响应式系统已更新 $config store
+					await tick();
+					await tick(); // 双重 tick 确保 store 更新传播完成
+					
+					const enableAnonymousAccess = $config?.features?.enable_anonymous_access ?? false;
+					
+					console.log('[匿名访问检查] config loaded:', $config);
+					console.log('[匿名访问检查] enableAnonymousAccess:', enableAnonymousAccess);
+					console.log('[匿名访问检查] pathname:', $page.url.pathname);
+					
+					if (!enableAnonymousAccess) {
+						// 旧行为：强制认证
+						if ($page.url.pathname !== '/auth') {
+							await goto(`/auth?redirect=${encodedUrl}`);
+						}
+					} else {
+						// 新行为：允许匿名访问，显示提示
+						console.log('匿名访问已启用 - 用户可以直接浏览，操作时再认证');
+						toast.info('欢迎使用先搜 AI！登录后解锁全部功能', {
+							duration: 4000,
+							action: {
+								label: '登录',
+								onClick: () => {
+									localStorage.setItem('redirectPath', window.location.pathname + window.location.search);
+									goto(`/auth?redirect=${encodedUrl}`);
+								}
+							}
+						});
 					}
 				}
 			}

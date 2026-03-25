@@ -507,6 +507,8 @@ from open_webui.env import (
     WEBUI_ADMIN_NAME,
     ENABLE_EASTER_EGGS,
     LOG_FORMAT,
+    # 🦞 先搜 AI - 允许匿名访问
+    ENABLE_ANONYMOUS_ACCESS,
 )
 
 
@@ -708,7 +710,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Open WebUI",
+    title=WEBUI_NAME,
     docs_url="/docs" if ENV == "dev" else None,
     openapi_url="/openapi.json" if ENV == "dev" else None,
     redoc_url=None,
@@ -2150,6 +2152,8 @@ async def get_app_config(request: Request):
             "enable_version_update_check": ENABLE_VERSION_UPDATE_CHECK,
             "enable_public_active_users_count": ENABLE_PUBLIC_ACTIVE_USERS_COUNT,
             "enable_easter_eggs": ENABLE_EASTER_EGGS,
+            # 🦞 先搜 AI - 允许匿名访问
+            "enable_anonymous_access": ENABLE_ANONYMOUS_ACCESS,
             **(
                 {
                     "enable_direct_connections": app.state.config.ENABLE_DIRECT_CONNECTIONS,

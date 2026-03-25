@@ -22,7 +22,6 @@
 	import { sanitizeResponseContent, extractCurlyBraceWords } from '$lib/utils';
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
 
-	import Suggestions from './Suggestions.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
 	import MessageInput from './MessageInput.svelte';
@@ -55,7 +54,6 @@
 	export let webSearchEnabled = false;
 
 	export let onUpload: Function = (e) => {};
-	export let onSelect = (e) => {};
 	export let onChange = (e) => {};
 
 	export let toolServers = [];
@@ -125,9 +123,14 @@
 									>
 										<img
 											src={`${WEBUI_API_BASE_URL}/models/model/profile/image?id=${model?.id}&lang=${$i18n.language}`}
+											alt={model?.name ?? 'model image'}
 											class=" size-9 @sm:size-10 rounded-full border-[1px] border-gray-100 dark:border-none"
 											aria-hidden="true"
 											draggable="false"
+											on:error={(e) => {
+												(e.currentTarget as HTMLImageElement).src =
+													`${WEBUI_BASE_URL}/static/favicon.png`;
+											}}
 										/>
 									</button>
 								</Tooltip>
@@ -150,7 +153,12 @@
 								</span>
 							</Tooltip>
 						{:else}
-							{$i18n.t('Hello, {{name}}', { name: $user?.name })}
+							{#if $user}
+								{$i18n.t('Hello, {{name}}', { name: $user?.name })}
+							{:else}
+								<!-- 🦞 优化 2：未登录用户问候语 -->
+								<span>先搜 AI 为您服务</span>
+							{/if}
 						{/if}
 					</div>
 				</div>
@@ -235,19 +243,6 @@
 			in:fade={{ duration: 200, delay: 200 }}
 		>
 			<FolderPlaceholder folder={$selectedFolder} />
-		</div>
-	{:else}
-		<div class="mx-auto max-w-2xl font-primary mt-2" in:fade={{ duration: 200, delay: 200 }}>
-			<div class="mx-5">
-				<Suggestions
-					suggestionPrompts={atSelectedModel?.info?.meta?.suggestion_prompts ??
-						models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
-						$config?.default_prompt_suggestions ??
-						[]}
-					inputValue={prompt}
-					{onSelect}
-				/>
-			</div>
 		</div>
 	{/if}
 </div>

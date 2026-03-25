@@ -3,6 +3,15 @@
 
 	export let className = 'size-8';
 	export let src = `${WEBUI_BASE_URL}/static/favicon.png`;
+
+	const fallbackSrc = `${WEBUI_BASE_URL}/static/favicon.png`;
+
+	const handleImageError = (e: Event) => {
+		const target = e.currentTarget as HTMLImageElement;
+		if (target.src !== fallbackSrc) {
+			target.src = fallbackSrc;
+		}
+	};
 </script>
 
 <img
@@ -18,4 +27,5 @@
 	class=" {className} object-cover rounded-full"
 	alt="profile"
 	draggable="false"
+	on:error={handleImageError}
 />

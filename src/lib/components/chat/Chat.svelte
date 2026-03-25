@@ -1716,6 +1716,26 @@
 	const submitPrompt = async (userPrompt, { _raw = false } = {}) => {
 		console.log('submitPrompt', userPrompt, $chatId);
 
+		// 🦞 匿名访问检查：未登录用户禁止发送消息
+		const enableAnonymousAccess = $config?.features?.enable_anonymous_access ?? false;
+		const isAnonymous = !$user || !$user.id;
+		
+		// 优化 4：已在登录页面时不再弹出提示
+		const isAuthPage = $page.url.pathname === '/auth';
+		
+		if (enableAnonymousAccess && isAnonymous && !isAuthPage) {
+			toast.info('请先登录以发送消息', {
+				duration: 4000,
+				action: {
+					label: '登录',
+					onClick: () => {
+						window.location.href = '/auth';
+					}
+				}
+			});
+			return;
+		}
+
 		const _selectedModels = selectedModels.map((modelId) =>
 			$models.map((m) => m.id).includes(modelId) ? modelId : ''
 		);

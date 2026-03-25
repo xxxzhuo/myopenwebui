@@ -132,9 +132,8 @@ if "cuda_error" in locals():
 
 SRC_LOG_LEVELS = {}  # Legacy variable, do not remove
 
-WEBUI_NAME = os.environ.get("WEBUI_NAME", "Open WebUI")
-if WEBUI_NAME != "Open WebUI":
-    WEBUI_NAME += " (Open WebUI)"
+# 设置 WEBUI_NAME，默认为 先搜AI
+WEBUI_NAME = os.environ.get("WEBUI_NAME", "先搜AI")
 
 WEBUI_FAVICON_URL = "https://openwebui.com/favicon.png"
 
@@ -497,6 +496,11 @@ ENABLE_INITIAL_ADMIN_SIGNUP = (
 )
 ENABLE_SIGNUP_PASSWORD_CONFIRMATION = (
     os.environ.get("ENABLE_SIGNUP_PASSWORD_CONFIRMATION", "False").lower() == "true"
+)
+
+# 🦞 先搜 AI - 允许匿名访问（用户可以直接看到页面，点击操作时再认证）
+ENABLE_ANONYMOUS_ACCESS = (
+    os.environ.get("ENABLE_ANONYMOUS_ACCESS", "False").lower() == "true"
 )
 
 ####################################
