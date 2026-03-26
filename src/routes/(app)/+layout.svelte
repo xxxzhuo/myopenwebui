@@ -355,20 +355,21 @@
 			}
 		}
 
+		// 🦞 先搜 AI - 禁用版本更新检查
 		// Check for version updates
-		if ($user?.role === 'admin' && $config?.features?.enable_version_update_check) {
-			// Check if the user has dismissed the update toast in the last 24 hours
-			if (localStorage.dismissedUpdateToast) {
-				const dismissedUpdateToast = new Date(Number(localStorage.dismissedUpdateToast));
-				const now = new Date();
+		// if ($user?.role === 'admin' && $config?.features?.enable_version_update_check) {
+		// 	// Check if the user has dismissed the update toast in the last 24 hours
+		// 	if (localStorage.dismissedUpdateToast) {
+		// 		const dismissedUpdateToast = new Date(Number(localStorage.dismissedUpdateToast));
+		// 		const now = new Date();
 
-				if (now - dismissedUpdateToast > 24 * 60 * 60 * 1000) {
-					checkForVersionUpdates();
-				}
-			} else {
-				checkForVersionUpdates();
-			}
-		}
+		// 		if (now - dismissedUpdateToast > 24 * 60 * 60 * 1000) {
+		// 			checkForVersionUpdates();
+		// 		}
+		// 	} else {
+		// 		checkForVersionUpdates();
+		// 	}
+		// }
 		// Persist showControls: track open/close state separately from saved size
 		// chatControlsSize always retains the last width for openPane()
 		await showControls.set(!$mobile ? localStorage.showControls === 'true' : false);
@@ -394,7 +395,8 @@
 <SettingsModal bind:show={$showSettings} />
 <ChangelogModal bind:show={$showChangelog} />
 
-{#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
+<!-- 🦞 先搜 AI - 隐藏版本更新提示 -->
+<!-- {#if version && compareVersion(version.latest, version.current) && ($settings?.showUpdateToast ?? true)}
 	<div class=" absolute bottom-8 right-8 z-50" in:fade={{ duration: 100 }}>
 		<UpdateInfoToast
 			{version}
@@ -404,7 +406,7 @@
 			}}
 		/>
 	</div>
-{/if}
+{/if} -->
 
 {#if $user}
 	<div class="app relative">

@@ -158,7 +158,8 @@
 	{showRelevance}
 />
 
-{#if citations.length > 0}
+<!-- 🦞 先搜 AI - 隐藏引用来源显示 -->
+<!-- {#if citations.length > 0}
 	{@const urlCitations = citations.filter((c) => c?.source?.name?.startsWith('http'))}
 	<div class=" py-1 -mx-0.5 w-full flex gap-1 items-center flex-wrap">
 		<button
@@ -225,4 +226,4 @@
 			{/each}
 		</div>
 	</div>
-{/if}
+{/if} -->

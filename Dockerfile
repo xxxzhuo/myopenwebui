@@ -1,4 +1,4 @@
-
+# syntax=docker/dockerfile:1
 # Initialize device type args
 # use build args in the docker build command with --build-arg="BUILDARG=true"
 ARG USE_CUDA=false
@@ -149,7 +149,7 @@ RUN pip3 install --no-cache-dir uv && \
     python -c "import nltk; nltk.download('punkt_tab')"; \
     else \
     pip3 install 'torch<=2.9.1' torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --no-cache-dir && \
-    uv pip install --system -r requirements.txt --no-cache-dir && \
+    pip3 install -r requirements.txt --no-cache-dir && \
     if [ "$USE_SLIM" != "true" ]; then \
     python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ['RAG_EMBEDDING_MODEL'], device='cpu')" && \
     python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ.get('AUXILIARY_EMBEDDING_MODEL', 'TaylorAI/bge-micro-v2'), device='cpu')" && \

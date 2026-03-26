@@ -288,7 +288,7 @@
 													bind:value={name}
 													type="text"
 													id="name"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 border-2 border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
 													autocomplete="name"
 													placeholder={$i18n.t('Enter Your Full Name')}
 													required
@@ -304,7 +304,7 @@
 												<input
 													bind:value={ldapUsername}
 													type="text"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 border-2 border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
 													autocomplete="username"
 													name="username"
 													id="username"
@@ -321,7 +321,7 @@
 													bind:value={email}
 													type="email"
 													id="email"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600 border-2 border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Your Email')}
@@ -338,7 +338,7 @@
 												bind:value={password}
 												type="password"
 												id="password"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+												inputClassName="my-0.5 w-full text-sm bg-transparent border-2 border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600"
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 												name="password"
@@ -359,7 +359,7 @@
 													bind:value={confirmPassword}
 													type="password"
 													id="confirm-password"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+													inputClassName="my-0.5 w-full text-sm bg-transparent border-2 border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
 													placeholder={$i18n.t('Confirm Your Password')}
 													autocomplete="new-password"
 													name="confirm-password"
